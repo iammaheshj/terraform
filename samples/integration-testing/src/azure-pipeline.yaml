@@ -71,7 +71,17 @@ stages:
       displayName: tfplan - CI Job
       pool:
         vmImage: ubuntu-20.04
-      steps:      
+      steps:  
+      
+      # Step 5: run Terraform plan to validate HCL syntax
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+        displayName: 'Run terraform plan'
+        inputs:
+          command: plan
+          workingDirectory: $(terraformWorkingDirectory)
+          environmentServiceName: $(serviceConnection)
+          commandOptions: '-var location=$(azureLocation) -out tfplan'    
+      
       - script: |
           cd $(terraformWorkingDirectory)
           terraform show -json tfplan >> tfplan.json
