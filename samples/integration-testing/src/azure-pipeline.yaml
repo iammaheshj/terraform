@@ -19,10 +19,10 @@ variables:
 
 stages:
   - stage: TerraformStaticCodeAnalysis
-    displayName: Terraform Module - CI
+    displayName: TerraformStaticCodeAnalysis
     jobs:
-    - job: TerraformContinuousIntegrationJob
-      displayName: TerraformContinuousIntegration - CI Job
+    - job: TerraformStaticCodeAnalysisJob
+      displayName: TerraformStaticCodeAnalysis - CI Job
       pool:
         vmImage: ubuntu-20.04
       steps:
@@ -62,4 +62,20 @@ stages:
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceName: $(serviceConnection)
-          commandOptions: -var location=$(azureLocation)
+          commandOptions: '-var location=$(azureLocation) -out tfplan'
+      
+      - script: |
+          cd $(terraformWorkingDirectory)
+          terraform show -json tfplan >> tfplan.json
+          # Format tfplan.json file
+          terraform show -json tfplan | jq '.' > tfplan.json
+          # show only the changes
+          cat tfplan.json | jq '[.resource_changes[] | {type: .type, name: .change.after.name, actions: .change.actions[]}]' 
+      displayName: Create tfplan.json
+    
+      - task: PublishBuildArtifacts@1
+        displayName: Upload tfplan
+        inputs:
+          PathtoPublish: '$(terraformWorkingDirectory)/'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
