@@ -63,7 +63,15 @@ stages:
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceName: $(serviceConnection)
           commandOptions: '-var location=$(azureLocation) -out tfplan'
-      
+  
+  - stage: tfplan
+    displayName: tfplan
+    jobs:
+    - job: tfplanJob
+      displayName: tfplan - CI Job
+      pool:
+        vmImage: ubuntu-20.04
+      steps:      
       - script: |
           cd $(terraformWorkingDirectory)
           terraform show -json tfplan >> tfplan.json
