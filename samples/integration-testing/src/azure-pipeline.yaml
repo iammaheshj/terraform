@@ -62,6 +62,7 @@ stages:
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceName: $(serviceConnection)
+          publishPlanResults: 'tfplan'
           commandOptions: '-var location=$(azureLocation) -out tfplan'  
       
       - script: |
@@ -76,6 +77,18 @@ stages:
       - task: PublishBuildArtifacts@1
         displayName: Upload tfplan
         inputs:
-          PathtoPublish: '$(terraformWorkingDirectory)/'
+          PathtoPublish: '$(terraformWorkingDirectory)/tfplan.json'
           ArtifactName: 'drop'
           publishLocation: 'Container'
+
+    - job: waitForValidation
+      displayName: Wait for external validation 
+      dependsOn: TerraformContinuousIntegrationJob
+      pool: server    
+      timeoutInMinutes: 4320 # job times out in 3 days
+      steps:   
+
+      - task: ManualValidation@0
+        inputs:
+          notifyUsers: 'mahesh.jadhav@capgemini.com'
+          instructions: 'you should validate the Terraform Plan file'
