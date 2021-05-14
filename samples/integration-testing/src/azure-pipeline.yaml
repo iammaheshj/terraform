@@ -36,7 +36,7 @@ stages:
     - job: TerraformContinuousIntegrationJob
       displayName: TerraformContinuousIntegration - CI Job
       pool:
-        vmImage: vs2017-win2016
+        vmImage: ubuntu-20.04
       steps:      
       # Step 2: install Terraform on the Azure Pipelines agent
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
@@ -62,25 +62,7 @@ stages:
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceName: $(serviceConnection)
-          commandOptions: '-var location=$(azureLocation) -out tfplan'
-  
-  - stage: tfplan
-    displayName: tfplan
-    jobs:
-    - job: tfplanJob
-      displayName: tfplan - CI Job
-      pool:
-        vmImage: ubuntu-20.04
-      steps:  
-      
-      # Step 5: run Terraform plan to validate HCL syntax
-      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-        displayName: 'Run terraform plan'
-        inputs:
-          command: plan
-          workingDirectory: $(terraformWorkingDirectory)
-          environmentServiceName: $(serviceConnection)
-          commandOptions: '-var location=$(azureLocation) -out tfplan'    
+          commandOptions: '-var location=$(azureLocation) -out tfplan'  
       
       - script: |
           cd $(terraformWorkingDirectory)
