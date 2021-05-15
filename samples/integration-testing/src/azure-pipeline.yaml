@@ -72,18 +72,17 @@ stages:
           terraform show -json tfplan | jq '.' > tfplan.json
           # show only the changes
           cat tfplan.json | jq '[.resource_changes[] | {type: .type, name: .change.after.name, actions: .change.actions[]}]' 
-          #mkdir drop
-          #mv tfplan.json ./drop
+          mkdir drop
+          mv tfplan.json ./drop
 
         displayName: Create tfplan.json
     
       - task: PublishBuildArtifacts@1
         displayName: Upload tfplan
         inputs:
-          PathtoPublish: '$(terraformWorkingDirectory)/'
+          PathtoPublish: '$(terraformWorkingDirectory)/drop/'
           ArtifactName: 'drop'
           publishLocation: 'Container'
-          file: tfplan.json
 
     - job: waitForValidation
       displayName: Wait for external validation 
