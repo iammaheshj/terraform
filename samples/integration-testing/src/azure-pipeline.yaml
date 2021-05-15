@@ -62,8 +62,8 @@ stages:
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceName: $(serviceConnection)
-          #publishPlanResults: 'tfplan'
           commandOptions: '-var location=$(azureLocation) -out tfplan'  
+          publishPlanResults: 'tfplan'
       
       - script: |
           cd $(terraformWorkingDirectory)
