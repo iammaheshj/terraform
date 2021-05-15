@@ -83,16 +83,7 @@ stages:
           ArtifactName: 'drop'
           publishLocation: 'Container'
 
-      - task: ManualValidation@0
-        displayName: Validate
-        timeoutInMinutes: 1440 # task times out in 1 day
-        inputs:
-          notifyUsers: |
-            mahesh.jadhav@capgemini.com
-          instructions: 'Please validate the build configuration and resume'
-          onTimeout: 'resume'
-
-    - job: waitForValidation
+    - job: waitForValidationThenApplyJob
       displayName: Wait for external validation 
       dependsOn: TerraformContinuousIntegrationJob
       pool: server    
@@ -101,5 +92,35 @@ stages:
 
       - task: ManualValidation@0
         inputs:
-          notifyUsers: 'mahesh.jadhav@capgemini.com'
+          notifyUsers: |
+            mahesh.jadhav@capgemini.com
           instructions: 'you should validate the Terraform Plan file'
+        onTimeout: 'resume'
+      
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+        displayName: Run terraform apply
+        inputs:
+          command: apply
+          workingDirectory: $(terraformWorkingDirectory)
+          environmentServiceName: $(serviceConnection)    
+
+    - job: waitForValidationThenDestroy
+      displayName: Wait for external validation 
+      dependsOn: waitForValidationThenApplyJob
+      pool: server    
+      timeoutInMinutes: 4320 # job times out in 3 days
+      steps:   
+
+      - task: ManualValidation@0
+        inputs:
+          notifyUsers: |
+            mahesh.jadhav@capgemini.com
+          instructions: 'you should validate the Terraform Plan file'
+        onTimeout: 'resume'
+      
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+        displayName: Run terraform destroy
+        inputs:
+          command: destroy
+          workingDirectory: $(terraformWorkingDirectory)
+          environmentServiceName: $(serviceConnection)
