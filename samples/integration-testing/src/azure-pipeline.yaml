@@ -95,7 +95,7 @@ stages:
           notifyUsers: |
             mahesh.jadhav@capgemini.com
           instructions: 'you should validate the Terraform Plan file'
-        onTimeout: 'resume'
+          onTimeout: 'resume'
       
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: Run terraform apply
@@ -116,7 +116,7 @@ stages:
           notifyUsers: |
             mahesh.jadhav@capgemini.com
           instructions: 'you should validate the Terraform Plan file'
-        onTimeout: 'resume'
+          onTimeout: 'resume'
       
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: Run terraform destroy
