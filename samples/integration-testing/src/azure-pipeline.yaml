@@ -119,18 +119,18 @@ stages:
           Contents: 'tfplan'
           TargetFolder: '$(terraformWorkingDirectory)'
   
-      - task: TerraformInstaller@0
-        displayName: Install TF 0.14.8
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+        displayName: Install TF
         inputs:
-          terraformVersion: '0.14.8'
+          terraformVersion: $(terraformVersion)
 
-      - task: TerraformTaskV1@0
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: $ terraform init
         inputs:
           command: init
           workingDirectory: $(terraformWorkingDirectory)
 
-      - task: TerraformTaskV1@0
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: $ terraform apply
         inputs:
           command: 'apply'
