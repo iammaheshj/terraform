@@ -83,7 +83,7 @@ stages:
           ArtifactName: 'drop'
           publishLocation: 'Container'
 
-      - task: ManualValidation@0
+      - task: ManualValidation@1
         timeoutInMinutes: 4320 # job times out in 3 days
         inputs:
           notifyUsers: |
