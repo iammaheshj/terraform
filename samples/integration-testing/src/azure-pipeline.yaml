@@ -60,26 +60,26 @@ stages:
         displayName: 'Run terraform plan'
         inputs:
           command: plan
-          workingDirectory: $(terraformWorkingDirectory)
+          workingDirectory: $(terraformWorkingDirectory)/tfplan
           environmentServiceName: $(serviceConnection)
           commandOptions: '-var location=$(azureLocation) -out tfplan'  
           publishPlanResults: 'tfplan'
       
       - script: |
-          cd $(terraformWorkingDirectory)
+          cd $(terraformWorkingDirectory)/tfplan
           terraform show -json tfplan >> tfplan.json
           # Format tfplan.json file
           terraform show -json tfplan | jq '.' > tfplan.json
           # show only the changes
           cat tfplan.json | jq '[.resource_changes[] | {type: .type, name: .change.after.name, actions: .change.actions[]}]' 
-          mkdir drop
-          mv tfplan.json $(terraformWorkingDirectory)/drop/
+          #mkdir drop
+          #mv tfplan.json $(terraformWorkingDirectory)/tfplan/
         displayName: Create tfplan.json
     
       - task: PublishBuildArtifacts@1
         displayName: Upload tfplan
         inputs:
-          PathtoPublish: '$(terraformWorkingDirectory)/drop/'
+          PathtoPublish: '$(terraformWorkingDirectory)/tfplan/'
           ArtifactName: 'drop'
           publishLocation: 'Container'
 
