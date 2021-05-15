@@ -83,14 +83,10 @@ stages:
           ArtifactName: 'drop'
           publishLocation: 'Container'
 
-    - job: waitForValidation
-      displayName: Wait for external validation 
-      dependsOn: TerraformContinuousIntegrationJob
-      pool: server    
-      timeoutInMinutes: 4320 # job times out in 3 days
-      steps:   
-
       - task: ManualValidation@0
+        timeoutInMinutes: 4320 # job times out in 3 days
         inputs:
-          notifyUsers: 'mahesh.jadhav@capgemini.com'
-          instructions: 'you should validate the Terraform Plan file'
+          notifyUsers: |
+            mahesh.jadhav@capgemini.com
+          instructions: 'Please validate the build configuration and resume'
+          onTimeout: 'resume'
