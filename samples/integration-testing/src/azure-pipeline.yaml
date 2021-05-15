@@ -73,8 +73,7 @@ stages:
           # show only the changes
           cat tfplan.json | jq '[.resource_changes[] | {type: .type, name: .change.after.name, actions: .change.actions[]}]' 
           mkdir drop
-          mv tfplan.json ./drop
-
+          mv tfplan.json $(terraformWorkingDirectory)/drop/
         displayName: Create tfplan.json
     
       - task: PublishBuildArtifacts@1
