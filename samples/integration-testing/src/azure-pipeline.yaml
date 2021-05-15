@@ -47,18 +47,26 @@ stages:
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform init'
         inputs:
-          command: init
+          provider: 'azurerm'
+          command: 'init'
           workingDirectory: $(terraformWorkingDirectory)
+          backendServiceArm: $(serviceConnection) 
+          backendAzureRmResourceGroupName: 'terraform-state-test-rg'
+          backendAzureRmStorageAccountName: 'terraformstatetest'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'terraform.state'
       # Step 4: run Terraform validate to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform validate'
         inputs:
+          provider: 'azurerm'
           command: validate
           workingDirectory: $(terraformWorkingDirectory)
       # Step 5: run Terraform plan to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform plan'
         inputs:
+          provider: 'azurerm'
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceName: $(serviceConnection)
@@ -127,12 +135,19 @@ stages:
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: $ terraform init
         inputs:
-          command: init
+          provider: 'azurerm'
+          command: 'init'
           workingDirectory: $(terraformWorkingDirectory)
+          backendServiceArm: $(serviceConnection) 
+          backendAzureRmResourceGroupName: 'terraform-state-test-rg'
+          backendAzureRmStorageAccountName: 'terraformstatetest'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'terraform.state'
 
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: $ terraform apply
         inputs:
+          provider: 'azurerm'
           command: 'apply'
           workingDirectory: '$(terraformWorkingDirectory)'
           commandOptions: 'tfplan'
