@@ -24,7 +24,7 @@ stages:
     - job: TerraformStaticCodeAnalysisJob
       displayName: TerraformStaticCodeAnalysis - CI Job
       pool:
-        vmImage: ubuntu-20.04
+        vmImage: ubuntu-latest
       steps:
       # Step 1: run the Checkov Static Code Analysis
       - bash: $(terraformWorkingDirectory)/checkov.sh $(terraformWorkingDirectory)
@@ -36,7 +36,7 @@ stages:
     - job: TerraformContinuousIntegrationJob
       displayName: TerraformContinuousIntegration - CI Job
       pool:
-        vmImage: ubuntu-20.04
+        vmImage: ubuntu-latest
       steps:      
       # Step 2: install Terraform on the Azure Pipelines agent
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
@@ -73,7 +73,7 @@ stages:
           # show only the changes
           cat tfplan.json | jq '[.resource_changes[] | {type: .type, name: .change.after.name, actions: .change.actions[]}]' 
           mkdir drop
-          mv tfplan.json $(terraformWorkingDirectory)/drop/
+          cp tfplan tfplan.json $(terraformWorkingDirectory)/drop/
         displayName: Create tfplan.json
     
       - task: PublishBuildArtifacts@1
@@ -96,31 +96,45 @@ stages:
             mahesh.jadhav@capgemini.com
           instructions: 'you should validate the Terraform Plan file'
           onTimeout: 'resume'
-      
-      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-        displayName: Run terraform apply
-        inputs:
-          command: apply
-          workingDirectory: $(terraformWorkingDirectory)
-          environmentServiceName: $(serviceConnection)    
 
-    - job: waitForValidationThenDestroy
-      displayName: Wait for external validation 
-      dependsOn: waitForValidationThenApplyJob
-      pool: server    
-      timeoutInMinutes: 4320 # job times out in 3 days
-      steps:   
-
-      - task: ManualValidation@0
-        inputs:
-          notifyUsers: |
-            mahesh.jadhav@capgemini.com
-          instructions: 'you should validate the Terraform Plan file'
-          onTimeout: 'resume'
+  - stage: Terraform_apply
+    pool:
+      vmImage: ubuntu-latest
+    jobs:  
+    - job: terraform_apply
+      steps:
       
-      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-        displayName: Run terraform destroy
+      - task: DownloadBuildArtifacts@0
+        displayName: Download tfplan
         inputs:
-          command: destroy
+          buildType: 'current'
+          downloadType: 'specific'
+          itemPattern: 'drop/tfplan'
+          downloadPath: '$(terraformWorkingDirectory)'
+  
+      - task: CopyFiles@2
+        displayName: Copy tfplan
+        inputs:
+          SourceFolder: '$(terraformWorkingDirectory)/drop'
+          Contents: 'tfplan'
+          TargetFolder: '$(terraformWorkingDirectory)'
+  
+      - task: TerraformInstaller@0
+        displayName: Install TF 0.14.8
+        inputs:
+          terraformVersion: '0.14.8'
+
+      - task: TerraformTaskV1@0
+        displayName: $ terraform init
+        inputs:
+          command: init
           workingDirectory: $(terraformWorkingDirectory)
-          environmentServiceName: $(serviceConnection)
+
+      - task: TerraformTaskV1@0
+        displayName: $ terraform apply
+        inputs:
+          command: 'apply'
+          workingDirectory: '$(terraformWorkingDirectory)'
+          commandOptions: 'tfplan'
+          environmentServiceName: $(serviceConnection) 
+      
