@@ -44,13 +44,22 @@ stages:
           TerraformContainer: "tfstate"
           terraformtfstate: "terraform.state"
           storagekey:
-            
+
       steps:      
       # Step 2: install Terraform on the Azure Pipelines agent
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
         displayName: 'Install Terraform'
         inputs:
           terraformVersion: $(terraformVersion)
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+        displayName: "Setup Terraform azurerm"
+        inputs:
+          workingDirectory: $(TFWorkingDirectory)
+          backendServiceArm: "$(ServiceConnection)"
+          backendAzureRmResourceGroupName: "$(TerraformStorageRG)"
+          backendAzureRmStorageAccountName: "$(TerraformStorageAccount)"
+          backendAzureRmContainerName: "$(TerraformContainer)"
+          backendAzureRmKey: "$(terraformtfstate)"
       # Step 3: run Terraform init to initialize the workspace
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform init'
@@ -58,12 +67,6 @@ stages:
           provider: 'azurerm'
           command: 'init'
           commandOptions: '-input=false'
-          workingDirectory: $(terraformWorkingDirectory)
-          backendServiceArm: $(serviceConnection) 
-          backendAzureRmResourceGroupName: 'terraform-state-test-rg'
-          backendAzureRmStorageAccountName: 'terraformstatetest2'
-          backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'terraform.state'
       # Step 4: run Terraform validate to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform validate'
