@@ -50,9 +50,10 @@ stages:
           provider: 'azurerm'
           command: 'init'
           workingDirectory: $(terraformWorkingDirectory)
+          azureLocation: $(azureLocation)
           backendServiceArm: $(serviceConnection) 
           backendAzureRmResourceGroupName: 'terraform-state-test-rg'
-          backendAzureRmStorageAccountName: 'terraformstatetest'
+          backendAzureRmStorageAccountName: 'terraformstatetest2'
           backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'terraform.state'
       # Step 4: run Terraform validate to validate HCL syntax
@@ -69,7 +70,7 @@ stages:
           provider: 'azurerm'
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
-          environmentServiceName: $(serviceConnection)
+          environmentServiceNameAzureRM: $(serviceConnection)
           commandOptions: '-var location=$(azureLocation) -out tfplan'  
           publishPlanResults: 'terraplan'
       
@@ -138,6 +139,7 @@ stages:
           provider: 'azurerm'
           command: 'init'
           workingDirectory: $(terraformWorkingDirectory)
+          azureLocation: $(azureLocation)
           backendServiceArm: $(serviceConnection) 
           backendAzureRmResourceGroupName: 'terraform-state-test-rg'
           backendAzureRmStorageAccountName: 'terraformstatetest'
@@ -151,5 +153,5 @@ stages:
           command: 'apply'
           workingDirectory: '$(terraformWorkingDirectory)'
           commandOptions: 'tfplan'
-          environmentServiceName: $(serviceConnection) 
+          environmentServiceNameAzureRM: $(serviceConnection) 
       
