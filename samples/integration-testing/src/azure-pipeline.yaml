@@ -15,7 +15,7 @@ variables:
   azureLocation: 'westeurope'
   # Terraform settings
   terraformWorkingDirectory: '$(System.DefaultWorkingDirectory)/samples/integration-testing/src'
-  terraformVersion: '0.14.8'
+  terraformVersion: '0.15.3'
 
 stages:
   - stage: TerraformStaticCodeAnalysis
@@ -53,7 +53,7 @@ stages:
           backendServiceArm: $(serviceConnection) 
           backendAzureRmResourceGroupName: 'terraform-state-test-rg'
           backendAzureRmStorageAccountName: 'terraformstatetest2'
-          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmContainerName: 'tfstate2'
           backendAzureRmKey: 'terraform.state'
       # Step 4: run Terraform validate to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
