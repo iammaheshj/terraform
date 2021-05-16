@@ -72,6 +72,11 @@ stages:
       # Step 5: run Terraform plan to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform plan'
+        env:
+          ARM_SUBSCRIPTION_ID: $(arm-subscription-id)
+          ARM_CLIENT_ID:       $(arm-client-id)
+          ARM_CLIENT_SECRET:   $(arm-client-secret)
+          ARM_TENANT_ID:       $(arm-tenant-id)
         inputs:
           provider: 'azurerm'
           command: plan
@@ -141,6 +146,11 @@ stages:
 
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: $ terraform init
+        env:
+          ARM_SUBSCRIPTION_ID: $(arm-subscription-id)
+          ARM_CLIENT_ID:       $(arm-client-id)
+          ARM_CLIENT_SECRET:   $(arm-client-secret)
+          ARM_TENANT_ID:       $(arm-tenant-id)
         inputs:
           command: 'init'
           workingDirectory: $(terraformWorkingDirectory)
@@ -153,6 +163,11 @@ stages:
 
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: $ terraform apply
+        env:
+          ARM_SUBSCRIPTION_ID: $(arm-subscription-id)
+          ARM_CLIENT_ID:       $(arm-client-id)
+          ARM_CLIENT_SECRET:   $(arm-client-secret)
+          ARM_TENANT_ID:       $(arm-tenant-id)
         inputs:
           command: 'apply'
           workingDirectory: '$(terraformWorkingDirectory)'
