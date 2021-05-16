@@ -51,6 +51,7 @@ stages:
           provider: 'azurerm'
           command: 'init'
           workingDirectory: $(terraformWorkingDirectory)
+          environmentServiceNameAzureRM: $(serviceConnection)
       # Step 4: run Terraform validate to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform validate'
