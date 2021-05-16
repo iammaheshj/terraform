@@ -15,7 +15,7 @@ variables:
   azureLocation: 'westeurope'
   # Terraform settings
   terraformWorkingDirectory: '$(System.DefaultWorkingDirectory)/samples/integration-testing/src'
-  terraformVersion: '0.15.3'
+  terraformVersion: '0.14.8'
 
 stages:
   - stage: TerraformStaticCodeAnalysis
