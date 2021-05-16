@@ -37,6 +37,14 @@ stages:
       displayName: TerraformContinuousIntegration - CI Job
       pool:
         vmImage: ubuntu-latest
+      variables:
+          TFWorkingDirectory: "$(terraformWorkingDirectory)"
+          TerraformStorageRG: 'terraform-state-test-rg'
+          TerraformStorageAccount: 'terraformstatetest2'
+          TerraformContainer: "tfstate"
+          terraformtfstate: "terraform.state"
+          storagekey:
+            
       steps:      
       # Step 2: install Terraform on the Azure Pipelines agent
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
