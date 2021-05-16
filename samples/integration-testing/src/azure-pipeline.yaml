@@ -50,8 +50,12 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'init'
-          workingDirectory: $(terraformWorkingDirectory)
-          environmentServiceNameAzureRM: $(serviceConnection)
+          workingDirectory: '$(terraformWorkingDirectory)'
+          backendServiceArm: $(serviceConnection)
+          backendAzureRmResourceGroupName: 'terraform-state-test-rg'
+          backendAzureRmStorageAccountName: 'terraformstatetest2'
+          backendAzureRmContainerName: 'tfstate'
+          backendAzureRmKey: 'terraform.state'
       # Step 4: run Terraform validate to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform validate'
