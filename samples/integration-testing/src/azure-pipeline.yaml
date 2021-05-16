@@ -50,9 +50,7 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'init'
-          commandOptions: '-input=false'
-          workingDirectory: $(TFWorkingDirectory)
-          backendServiceArm: $(serviceConnection) 
+          workingDirectory: $(terraformWorkingDirectory)
       # Step 4: run Terraform validate to validate HCL syntax
       - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
         displayName: 'Run terraform validate'
