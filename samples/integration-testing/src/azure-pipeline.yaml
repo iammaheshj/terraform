@@ -125,7 +125,9 @@ stages:
           instructions: 'you should validate the Terraform Plan file'
           onTimeout: 'resume'
 
-  - stage: Terraform_apply
+  - stage: Terraform_apply    
+    dependsOn: TerraformContinuousIntegration
+    condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
     pool:
       vmImage: ubuntu-latest
     jobs:  
