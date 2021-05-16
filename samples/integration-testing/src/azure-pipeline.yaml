@@ -82,7 +82,7 @@ stages:
           command: plan
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceNameAzureRM: $(serviceConnection)
-          commandOptions: '-var location=$(azureLocation) -out tfplan'  
+          commandOptions: '-var location=$(azureLocation) -out tfplan  -detailed-exitcode'  
           publishPlanResults: 'terraplan'
       
       - script: |
@@ -99,16 +99,19 @@ stages:
           ARM_CLIENT_ID:       $(arm-client-id)
           ARM_CLIENT_SECRET:   $(arm-client-secret)
           ARM_TENANT_ID:       $(arm-tenant-id)
+        condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
         displayName: Create tfplan.json
     
       - task: PublishBuildArtifacts@1
         displayName: Upload tfplan
+        condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
         inputs:
           PathtoPublish: '$(terraformWorkingDirectory)/drop/'
           ArtifactName: 'drop'
           publishLocation: 'Container'
 
     - job: waitForValidationThenApplyJob
+      condition: and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
       displayName: Wait for external validation 
       dependsOn: TerraformContinuousIntegrationJob
       pool: server    
